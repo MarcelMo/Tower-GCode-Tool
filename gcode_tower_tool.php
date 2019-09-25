@@ -10,7 +10,6 @@ $post_list=array(
 'stop_value'=>'80',
 'layer_regex'=>'~^; layer ([0-9]+), *Z *= [0-9\\.]+$~im',
 'command'=>'M221 S$new_value\r\n',
-'steps'=>10,
 'step_size'=>1
 );
 
@@ -83,7 +82,11 @@ function calcValueForLayer($layer){
 	if ($layer>=$stop_layer) return($stop_value);
 
 	$value=$start_value+($stop_value-$start_value)/($stop_layer-$start_layer)*($layer-$start_layer);
-	$value=((int)($value/$step_size))*$step_size;
+	if ($start_value>$stop_value) {
+		$value=ceil($value/$step_size)*$step_size;
+	} else {
+		$value=floor($value/$step_size)*$step_size;
+	}
 	return($value);
 }
 
@@ -95,7 +98,6 @@ echo "Start at layer: <input type='text' name='start_layer' value='".@$_SESSION[
 Start layer value: <input type='text' name='start_value' value='".@$_SESSION['start_value']."' /><br/>
 Stop at layer: <input type='text' name='stop_layer' value='".@$_SESSION['stop_layer']."' /><br/>
 Stop layer value: <input type='text' name='stop_value' value='".@$_SESSION['stop_value']."' /><br/>
-Steps : <input type='text' name='steps' value='".@$_SESSION['steps']."' /><br/>
 Step Size : <input type='text' name='step_size' value='".@$_SESSION['step_size']."' /><br/>
 Layer marker (RegEx): <input type='text' name='layer_regex' value='".htmlspecialchars(@$_SESSION['layer_regex'])."'/><br/>
 Command: <input type='text' name='command' value='".@$_SESSION['command']."' /><br/>
